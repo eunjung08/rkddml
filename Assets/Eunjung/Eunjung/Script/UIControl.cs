@@ -23,11 +23,17 @@ namespace Eunjung
 
         Canvas canvas;
         BattleSystem battleSystem;
+
+        GameObject PlayerUI;
+        GameObject EnemyUI;
+        public List<Slider> sliderPlayer = new List<Slider>();
+        public List<Slider> sliderEnemy = new List<Slider>();
+
         // Start is called before the first frame update
         void Start()
         {
             battleSystem = GameObject.Find("BattleSystem").GetComponent<BattleSystem>();
-            CreateCanvas();
+            //CreateCanvas();
         }
 
         public void CreateCanvas()
@@ -52,7 +58,7 @@ namespace Eunjung
             objTextIng.transform.parent = canvas.transform;
             TextIng = objTextIng.AddComponent<Text>();
             TextIng.font = myFont;
-            TextIng.text = "";
+            TextIng.text = "현재 상태";
             TextIng.fontSize = 20;
             TextIng.alignment = TextAnchor.MiddleCenter;
             RectTransform RtTextIng = objTextIng.GetComponent<RectTransform>();
@@ -101,6 +107,7 @@ namespace Eunjung
             rtBtnAttattackText.anchorMax = new Vector2(1, 1);
             rtBtnAttattackText.anchoredPosition = Vector2.zero;
             rtBtnAttattackText.sizeDelta = new Vector2(0, 0);
+            BtnAttack.interactable = false;
 
             GameObject objBtnSkill = new GameObject("BtnSkill");
             objBtnSkill.transform.parent = canvas.transform;
@@ -124,6 +131,7 @@ namespace Eunjung
             rtBtnAttSkillText.anchorMax = new Vector2(1, 1);    
             rtBtnAttSkillText.anchoredPosition = Vector2.zero;
             rtBtnAttSkillText.sizeDelta = new Vector2(0, 0);
+            BtnSkill.interactable = false;
 
             GameObject objBtnEndTurn = new GameObject("BtnEndTurn");
             objBtnEndTurn.transform.parent = canvas.transform;
@@ -147,6 +155,7 @@ namespace Eunjung
             rtBtnAttEndTurnText.anchorMax = new Vector2(1, 1);
             rtBtnAttEndTurnText.anchoredPosition = Vector2.zero;
             rtBtnAttEndTurnText.sizeDelta = new Vector2(0, 0);
+            BtnEndTurn.interactable = false;
         }
 
         public void PlayerTurn(string unitName)
@@ -211,7 +220,82 @@ namespace Eunjung
         public void OnBtnEndTurn()
         {
             Debug.Log("턴종료");
+            BtnAttack.interactable = false;
+            BtnSkill.interactable = false;
+            BtnEndTurn.interactable = false;
             battleSystem.EndTurn();
+        }
+        /// <summary>
+        /// UI 생성
+        /// </summary>
+        /// <param name="preset">0:왼쪽, 위아래로 full, 1:오른쪽,위아래로 full</param>
+        /// <param name="name">오브젝트 이름</param>
+        /// <param name="sizeX">UI with 값</param>
+        /// <param name="posY">UI ToP 값</param>
+        /// <returns></returns>
+        public GameObject CreateStatusUI(int preset, string name, float sizeX = 0, float posY = 0)
+        {
+            GameObject objCreateUI = new GameObject(name);
+            objCreateUI.transform.parent = canvas.transform;
+            RectTransform RtPlayerStatus = objCreateUI.AddComponent<RectTransform>();
+            switch (preset)
+            {
+                case 0:
+                    {
+                        RtPlayerStatus.anchorMin = new Vector2 (0, 0);
+                        RtPlayerStatus.anchorMax = new Vector2(0, 1);
+                        RtPlayerStatus.sizeDelta = new Vector2(sizeX, posY);
+                        RtPlayerStatus.anchoredPosition = new Vector2(sizeX / 2, 0);
+                    }
+                    break;
+
+                case 1:
+                    {
+                        RtPlayerStatus.anchorMin = new Vector2(1, 0);
+                        RtPlayerStatus.anchorMax = new Vector2(1, 1);
+                        RtPlayerStatus.sizeDelta = new Vector2(sizeX, posY);
+                        RtPlayerStatus.anchoredPosition = new Vector2(-sizeX / 2, 0);
+                    }
+                    break;
+            }
+            return objCreateUI;
+        }
+        public void CreateHPUI()
+        {
+            //좌우 player, enemy 체력바
+            PlayerUI = CreateStatusUI(0, "LeftPlayer", 150f, -400f);
+            PlayerUI.AddComponent<VerticalLayoutGroup>().childControlHeight = false;
+            EnemyUI = CreateStatusUI(1, "RightEnemy", 150f, -400f);
+            EnemyUI.AddComponent<VerticalLayoutGroup>().childControlHeight = false;
+
+            GameObject HPPrefab = Resources.Load<GameObject>("Prefabs/HP");
+
+            for(int i = 0; i < battleSystem.players.Count; i++)
+            {
+                GameObject p = Instantiate(HPPrefab);
+                p.transform.SetParent(PlayerUI.transform);
+                p.name = battleSystem.players[i].unitName;
+                p.transform.Find("HPText").GetComponent<Text>().text = battleSystem.players[i].unitName;
+                sliderPlayer.Add(p.GetComponent<Slider>());
+            }
+
+            for(int i = 0; i < battleSystem.enemys.Count; i++)
+            {
+                GameObject E = Instantiate(HPPrefab);
+                E.transform.SetParent(EnemyUI.transform);
+                E.name = battleSystem.enemys[i].unitName;
+                E.transform.Find("HPText").GetComponent<Text>().text = battleSystem.enemys[i].unitName;
+                sliderEnemy.Add(E.GetComponent<Slider>());
+            }
+        }
+
+        public void SetPlayerHPUI(Unit unit)
+        {
+            sliderPlayer.Find(x => x.name == unit.unitName).value = ((float)unit.currentHP / (float)unit.maxHP);
+        }
+        public void SetEnemyHPUI(Unit unit)
+        {
+            sliderEnemy.Find(x => x.name == unit.unitName).value = ((float)unit.currentHP / (float)unit.maxHP);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Eunjung
         Animator animator;
         void Awake()
         {
-            objEnemy = Resources.Load<GameObject>("Prefab/Enemy");
+            objEnemy = Resources.Load<GameObject>("Prefabs/Enemy");
         }
         void Start()
         {

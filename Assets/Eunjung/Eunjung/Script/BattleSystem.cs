@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Plastic.Newtonsoft.Json.Bson;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Eunjung
 {
@@ -15,11 +16,11 @@ namespace Eunjung
         /// <summary>
         /// 플레이어의 유닛들
         /// </summary>
-        private List<Unit> players = new List<Unit>();
+        public List<Unit> players = new List<Unit>();
         /// <summary>
         /// 적의 유닛들
         /// </summary>
-        private List<Unit> enemys = new List<Unit>();
+        public List<Unit> enemys = new List<Unit>();
         /// <summary>
         /// 모든 유닛들
         /// </summary>
@@ -53,8 +54,8 @@ namespace Eunjung
         EnemyControl enemyControl;
 
         Animator animator;
-        Renderer[] renderes;
-        Color originColor;
+        //Renderer[] renderes;
+        //Color originColor;
 
         private void Awake()
         {
@@ -96,6 +97,8 @@ namespace Eunjung
                 Debug.LogError("Enemy가 존재하지 않습니다");
             }
 
+            uIControl.CreateCanvas();
+            uIControl.CreateHPUI();
             uIControl.SetTextIng("야생의 몬스터들과 마주쳤다.");
 
             yield return new WaitForSeconds(1.0f);
@@ -134,6 +137,7 @@ namespace Eunjung
             {
                 turnQueue.Enqueue(unit);
             }
+            RemoveDeadUnitsFromQueue();
         }
 
         /// <summary>
@@ -185,29 +189,54 @@ namespace Eunjung
             yield return new WaitForSeconds(1.0f);
 
             Unit target = players[Random.Range(0, players.Count)].GetComponent<Unit>();
+            int count = 0;
+            while (target.isDead)
+            {
+                target = players[Random.Range(0, players.Count)].GetComponent<Unit>();
+                count++;
+                if(count > 100)
+                {
+                    Debug.LogError("100번 이상 반복할 만큼 문제가 생김");
+                    break;
+                }
+            }
             bool isDead = target.Damage(unit.attackDmg);
 
             animator = unit.GetComponent<Animator>();
-            renderes = target.GetComponentsInChildren<Renderer>();
-            originColor = renderes[0].material.color;
+            //renderes = target.GetComponentsInChildren<Renderer>();
+            //originColor = renderes[0].material.color;
             animator.SetTrigger("isAttack");
             uIControl.SetTextIng(unit.unitName + "가 " + target.unitName + "를 공격!");
-            foreach (Renderer render in renderes)
-            {
-                render.material.color = Color.red;
-            }
-            yield return new WaitForSeconds(0.5f);
-            foreach (Renderer render in renderes)
-            {
-                render.material.color = originColor;
-            }
+            //foreach (Renderer render in renderes)
+            //{
+            //    render.material.color = Color.red;
+            //}
+            //yield return new WaitForSeconds(0.5f);
+            //foreach (Renderer render in renderes)
+            //{
+            //    render.material.color = originColor;
+            //}
             yield return new WaitForSeconds(1f);
             if (isDead)
             {
                 uIControl.SetTextIng(target.unitName + "가 사망!");
-                Destroy(target.gameObject);
+                target.isDead = true;
+                target.GetComponent<CapsuleCollider>().enabled = false;
+                target.GetComponent<Animator>().SetTrigger("Death");
+                RemoveDeadUnitsFromQueue();
+                
+                //Invoke("ProcessTurn", 1.0f);
             }
-            Invoke("ProcessTurn", 1.0f);
+            uIControl.SetPlayerHPUI(target);
+            //승리 체크
+            if (!players.Exists(x => !x.isDead))
+            {
+                uIControl.SetTextIng("적이 승리하였습니다.");
+            }
+            else
+            {
+                ProcessTurn();
+            }
         }
 
         void SetTurnUI()
@@ -237,33 +266,57 @@ namespace Eunjung
         IEnumerator PlayerAttack()
         {
             animator = currentPlayerUnit.GetComponent<Animator>();
-            renderes = selectedTarget.GetComponentsInChildren<Renderer>();
-            originColor = renderes[0].material.color;
+            //renderes = selectedTarget.GetComponentsInChildren<Renderer>();
+            //originColor = renderes[0].material.color;
             bool isDead = selectedTarget.Damage(currentPlayerUnit.attackDmg);
             animator.SetTrigger("isAttack");
             uIControl.SetTextIng(currentPlayerUnit.unitName + "가 " + selectedTarget.unitName + "를 공격!");
-            foreach (Renderer render in renderes)
-            {
-                render.material.color = Color.red;
-            }
-            yield return new WaitForSeconds(0.5f);
-            foreach (Renderer render in renderes)
-            {
-                render.material.color = originColor;
-            }
+            //foreach (Renderer render in renderes)
+            //{
+            //    render.material.color = Color.red;
+            //}
+            //yield return new WaitForSeconds(0.5f);
+            //foreach (Renderer render in renderes)
+            //{
+            //    render.material.color = originColor;
+            //}
 
             yield return new WaitForSeconds(1f);
-
             if (isDead)
             {
                 uIControl.SetTextIng(selectedTarget.unitName + "가 사망!");
-                Destroy(selectedTarget.gameObject);
-                
+                selectedTarget.GetComponent<CapsuleCollider>().enabled = false;
+                selectedTarget.GetComponent<Animator>().SetTrigger("Death");
+                RemoveDeadUnitsFromQueue();
+                //Invoke("ProcessTurn", 1.0f);
+            }
+            uIControl.SetEnemyHPUI(selectedTarget);
+            //승리 체크
+            if (!enemys.Exists(x => !x.isDead))
+            {
+                uIControl.SetTextIng("플레이어가 승리하였습니다.");
+            }
+            else
+            {
+                ProcessTurn();
+            }
+        }
+        /// <summary>
+        /// 죽었는지 판단
+        /// </summary>
+        void RemoveDeadUnitsFromQueue()
+        {
+            Queue<Unit> updatedQueue = new Queue<Unit>();
+            foreach (Unit unit in turnQueue)
+            {
+                if (!unit.isDead)
+                {
+                    updatedQueue.Enqueue(unit);
+                }
             }
 
-            Invoke("ProcessTurn", 1.0f);
+            turnQueue = updatedQueue;
         }
-
         void Update()
         {
             if (isTargeting)
@@ -277,7 +330,11 @@ namespace Eunjung
                     {
                         // Raycast가 충돌한 오브젝트 출력
                         // Debug.Log("클릭한 오브젝트: " + hit.collider.gameObject.name);
-                        SelectTarget(hit.collider.GetComponent<Unit>());
+                        if (hit.transform.CompareTag("Enemy"))
+                            //if(hit.transform.tag==("Enmey")) :같지만 CompareTag 속도가 더 빠름
+                        {
+                            SelectTarget(hit.collider.GetComponent<Unit>());
+                        }
                     }
                 }
             }

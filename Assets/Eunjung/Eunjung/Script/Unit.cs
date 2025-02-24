@@ -30,6 +30,10 @@ namespace Eunjung
         /// 턴 순서에 영향을 미치는 속도
         /// </summary>
         public int speed;
+        /// <summary>
+        /// 죽었는지 확인
+        /// </summary>
+        public bool isDead = false;
         // Start is called before the first frame update
         void Start()
         {
@@ -39,7 +43,6 @@ namespace Eunjung
         // Update is called once per frame
         void Update()
         {
-        
         }
         public bool Damage(int damage)
         {
@@ -47,6 +50,7 @@ namespace Eunjung
             if(currentHP <= 0)
             {
                 currentHP = 0;
+                isDead = true;
                 return true;
             }
             return false;

@@ -7,12 +7,14 @@ namespace Eunjung
 {
     public class PlayerControl : MonoBehaviour
     {
+        Rigidbody rigid;
+        public Transform playerResponse;
         GameObject objPlayer;
         Animator animator;
         // Start is called before the first frame update
         private void Awake()
         {
-            objPlayer = Resources.Load<GameObject>("Prefab/Player");
+            objPlayer = Resources.Load<GameObject>("Prefabs/Player");
         }
         void Start()
         {
