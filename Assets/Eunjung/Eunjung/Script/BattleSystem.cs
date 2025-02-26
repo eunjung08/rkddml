@@ -59,6 +59,8 @@ namespace Eunjung
 
         private void Awake()
         {
+            status = BattleStatus.MAP;
+            Debug.Log(status);
             uIControl = GameObject.Find("UIControl").GetComponent<UIControl>();
             playerControl = GameObject.Find("PlayerContorl").GetComponent<PlayerControl>();
             enemyControl = GameObject.Find("EnemyContorl").GetComponent<EnemyControl>();
@@ -66,24 +68,22 @@ namespace Eunjung
         // Start is called before the first frame update
         void Start()
         {
+        }
+        public void StartsBattle()
+        {            
             // 전투시작
             status = BattleStatus.START;
-            Invoke("StartBattle", 2.0f);
-        }
-
-        public void StartBattle()
-        {
             StartCoroutine(SetBattle());
         }
 
         IEnumerator SetBattle()
         {
-            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Players"))
             {
                 players.Add(obj.GetComponent<Unit>());
                 units.Add(obj.GetComponent<Unit>());
             }
-            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Enemy"))
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Enemys"))
             {
                 enemys.Add(obj.GetComponent<Unit>());
                 units.Add(obj.GetComponent<Unit>());
@@ -330,8 +330,8 @@ namespace Eunjung
                     {
                         // Raycast가 충돌한 오브젝트 출력
                         // Debug.Log("클릭한 오브젝트: " + hit.collider.gameObject.name);
-                        if (hit.transform.CompareTag("Enemy"))
-                            //if(hit.transform.tag==("Enmey")) :같지만 CompareTag 속도가 더 빠름
+                        if (hit.transform.CompareTag("Enemys"))
+                            //if(hit.transform.tag==("Enmeys")) :같지만 CompareTag 속도가 더 빠름
                         {
                             SelectTarget(hit.collider.GetComponent<Unit>());
                         }

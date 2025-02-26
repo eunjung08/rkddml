@@ -4,6 +4,6 @@ using UnityEngine;
 
 namespace Eunjung
 {
-    public enum BattleStatus { START, PLAYER_TURN, ENEMY_TURN, WIN, LOSE }
+    public enum BattleStatus { START, PLAYER_TURN, ENEMY_TURN, WIN, LOSE, MAP }
 
 }

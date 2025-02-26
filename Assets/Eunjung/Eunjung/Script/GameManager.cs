@@ -6,6 +6,7 @@ namespace Eunjung
 {
     public class GameManager : MonoBehaviour
     {
+        public BattleStatus status;
         UIControl uIControl;
         PlayerControl playerControl;
         EnemyControl enemyControl;
@@ -20,11 +21,9 @@ namespace Eunjung
 
             GameObject objPlayerControl = new GameObject("PlayerContorl");
             playerControl = objPlayerControl.AddComponent<PlayerControl>();
-            playerControl.CreatePlayers(4);
 
             GameObject objEnemyControl = new GameObject("EnemyContorl");
             enemyControl = objEnemyControl.AddComponent<EnemyControl>();
-            enemyControl.CreateEnemy(4);
 
             GameObject objBattleSystem = new GameObject("BattleSystem");
             battleSystem = objBattleSystem.AddComponent<BattleSystem>();
@@ -35,7 +34,15 @@ namespace Eunjung
         // Update is called once per frame
         void Update()
         {
-        
+        }
+
+        public void BattleStart()
+        {
+            playerControl.CreatePlayers(4);
+
+            enemyControl.CreateEnemys(4);
+
+            battleSystem.StartsBattle();
         }
     }
 }
