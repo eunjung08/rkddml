@@ -27,31 +27,37 @@ namespace Eunjung
         }
         void Start()
         {
-            enemyResponse = GameObject.Find("Spawn_e").transform;
-            CreateEnemy();
+            //enemyResponse = GameObject.Find("Spawn_e").transform;
+            //CreateEnemy();
         }
-        public void CreateEnemy()
-        {
-            Enemy = Instantiate(objEnemy, enemyResponse.position, enemyResponse.transform.rotation);
-            navMeshAgent = Enemy.GetComponent<NavMeshAgent>();
-            player = GameObject.Find("Player(Clone)").transform;
-            gameManager = FindObjectOfType<GameManager>();
-        }
+        //public void CreateEnemy()
+        //{
+        //    Enemy = Instantiate(objEnemy, enemyResponse.position, enemyResponse.transform.rotation);
+        //    navMeshAgent = Enemy.GetComponent<NavMeshAgent>();
+        //    player = GameObject.Find("Player(Clone)").transform;
+        //    gameManager = FindObjectOfType<GameManager>();
+        //}
 
         void Update()
         {
-            float distanceToPlayer = Vector3.Distance(Enemy.transform.position, player.position);
-            if (distanceToPlayer <= navDistance)
-            {
+            //float distanceToPlayer = Vector3.Distance(Enemy.transform.position, player.position);
+            //if (distanceToPlayer <= navDistance)
+            //{
                 
-                navMeshAgent.enabled = false;
-                if (gameManager != null && isCheck == false)
-                {
-                    isCheck = true;
-                    gameManager.BattleStart();
-                }
-            }
+            //    navMeshAgent.enabled = false;
+            //    if (gameManager != null && isCheck == false)
+            //    {
+            //        isCheck = true;
+            //        //gameManager.BattleStart();
+            //        Invoke("Time", 2.0f);
+            //    }
+            //}
         }
+
+        //void Time()
+        //{
+        //    gameManager.BattleStart();
+        //}
         //public void Check()
         //{
         //    float distanceToPlayer = Vector3.Distance(transform.position, player.position);

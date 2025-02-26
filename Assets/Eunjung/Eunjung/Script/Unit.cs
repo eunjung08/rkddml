@@ -55,5 +55,15 @@ namespace Eunjung
             }
             return false;
         }
+
+        public void SetData(string unitName, int maxHP, int currentHP, int attackDng, int skillDng, int speed)
+        {
+            this.unitName = unitName;
+            this.maxHP = maxHP;
+            this.currentHP = currentHP;
+            this.attackDmg = attackDng;
+            this.skillDmg = skillDng;
+            this.speed = speed;
+        }
     }
 }

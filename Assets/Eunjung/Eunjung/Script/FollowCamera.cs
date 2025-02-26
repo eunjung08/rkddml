@@ -16,25 +16,28 @@ namespace Eunjung
         {
         }
 
-        void LateUpdate()
+        public void Set()
         {
             target = GameObject.Find("Player(Clone)").transform;
-            battlePostion = GameObject.Find("BattlePostion").transform;
             battleSystem = GameObject.Find("BattleSystem").GetComponent<BattleSystem>();
-            if (battleSystem.status == BattleStatus.MAP)
-            {
+        }
+        void LateUpdate()
+        {
+            //battlePostion = GameObject.Find("CameraPostion").transform;
+            //if (battleSystem.status == BattleStatus.MAP)
+            //{
                 Vector3 desiredPos = target.position + offset;
                 Vector3 smoothedPos = Vector3.Lerp(transform.position, desiredPos, smoothSpeed);
                 this.transform.position = smoothedPos;
                 this.transform.LookAt(target);
-            }
-            else
-            {
-                Vector3 desiredPos = battlePostion.position;
-                Quaternion quaternion = battlePostion.rotation;
-                this.transform.position = desiredPos;
-                this.transform.rotation = quaternion;
-            }
+            //}
+            //else
+            //{
+            //    Vector3 desiredPos = battlePostion.position;
+            //    Quaternion quaternion = battlePostion.rotation;
+            //    this.transform.position = desiredPos;
+            //    this.transform.rotation = quaternion;
+            //}
         }
     }
 }

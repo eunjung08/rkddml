@@ -8,24 +8,24 @@ namespace Eunjung
 {
     public class PlayerControl : MonoBehaviour
     {
-        CharacterController characterController;
-        public float speed = 10f;
-        bool isWalk = false;
+        //CharacterController characterController;
+        //public float speed = 10f;
+        //bool isWalk = false;
         Rigidbody rigid;
         Transform playerResponse;
-        GameObject objPlayer;
+        //GameObject objPlayer;
         GameObject objPlayers;
-        GameObject Player;
+        //GameObject Player;
         Animator animator;
         bool isStop = false;
         BattleSystem battleSystem;
         // Start is called before the first frame update
         private void Awake()
         {
-            objPlayer = Resources.Load<GameObject>("Prefabs/Player");
+            //objPlayer = Resources.Load<GameObject>("Prefabs/Player");
             objPlayers = Resources.Load<GameObject>("Prefabs/Players");
-            playerResponse = GameObject.Find("Spawn_p").transform;
-            CreatePlayer();
+            //playerResponse = GameObject.Find("Spawn_p").transform;
+            //CreatePlayer();
         }
         void Start()
         {
@@ -33,71 +33,71 @@ namespace Eunjung
         }
         void Update()
         {
-            if (battleSystem.status != BattleStatus.MAP)
-            {
-                isStop = true;
-            }
-            if (!isStop)
-            {
-                Walk();
-                Rotation();
-            }
+            //if (battleSystem.status != BattleStatus.MAP)
+            //{
+            //    isStop = true;
+            //}
+            //if (!isStop)
+            //{
+            //    Walk();
+            //    Rotation();
+            //}
         }
-        public void CreatePlayer()
-        {
-            Player = Instantiate(objPlayer, playerResponse.position, playerResponse.transform.rotation);
-            characterController = Player.GetComponent<CharacterController>();
-            animator = Player.GetComponent<Animator>();
-        }
+        //public void CreatePlayer()
+        //{
+        //  Player = Instantiate(objPlayer, playerResponse.position, playerResponse.transform.rotation);
+        //  characterController = Player.GetComponent<CharacterController>();
+        //  animator = Player.GetComponent<Animator>();
+        //}
 
-        void Walk()
-        {
-            isWalk = false;
+        //void Walk()
+        //{
+        //    isWalk = false;
 
-            if (Input.GetKey(KeyCode.W))
-            {
-                characterController.Move(Player.transform.forward * Time.deltaTime * speed);
-                isWalk = true;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                characterController.Move(-Player.transform.forward * Time.deltaTime * speed);
-                isWalk = true;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                characterController.Move(Player.transform.right * Time.deltaTime * speed);
-                isWalk = true;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                characterController.Move(-Player.transform.right * Time.deltaTime * speed);
-                isWalk = true;
-            }
-            if (isWalk)
-            {
-                animator.SetBool("isWalk", true);
-            }
-            else
-            {
-                animator.SetBool("isWalk", false);
-            }
-        }
+        //    if (Input.GetKey(KeyCode.W))
+        //    {
+        //        characterController.Move(Player.transform.forward * Time.deltaTime * speed);
+        //        isWalk = true;
+        //    }
+        //    if (Input.GetKey(KeyCode.S))
+        //    {
+        //        characterController.Move(-Player.transform.forward * Time.deltaTime * speed);
+        //        isWalk = true;
+        //    }
+        //    if (Input.GetKey(KeyCode.D))
+        //    {
+        //        characterController.Move(Player.transform.right * Time.deltaTime * speed);
+        //        isWalk = true;
+        //    }
+        //    if (Input.GetKey(KeyCode.A))
+        //    {
+        //        characterController.Move(-Player.transform.right * Time.deltaTime * speed);
+        //        isWalk = true;
+        //    }
+        //    if (isWalk)
+        //    {
+        //        animator.SetBool("isWalk", true);
+        //    }
+        //    else
+        //    {
+        //        animator.SetBool("isWalk", false);
+        //    }
+        //}
 
-        void Rotation()
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //void Rotation()
+        //{
+        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            Plane plane = new Plane(Vector3.up, Vector3.zero);
+        //    Plane plane = new Plane(Vector3.up, Vector3.zero);
 
-            float rayLength;
-            if (plane.Raycast(ray, out rayLength))
-            {
-                Vector3 mousePoint = ray.GetPoint(rayLength);
+        //    float rayLength;
+        //    if (plane.Raycast(ray, out rayLength))
+        //    {
+        //        Vector3 mousePoint = ray.GetPoint(rayLength);
 
-                Player.transform.LookAt(new Vector3(mousePoint.x, Player.transform.position.y, mousePoint.z));
-            }
-        }
+        //        Player.transform.LookAt(new Vector3(mousePoint.x, Player.transform.position.y, mousePoint.z));
+        //    }
+        //}
         public void CreatePlayers(int num)
         {
             for(int i = 0; i < num; i++)
@@ -106,7 +106,10 @@ namespace Eunjung
                 //GameObject objPlayer = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 Players.name = "Player " + i.ToString();
                 Players.tag = "Players";
-                Players.AddComponent<Unit>().unitName = "P" + i;
+                int maxHP = Random.Range(5, 11);
+                int attackDmg = Random.Range(1, 3);
+                int speed = Random.Range(1, 4);
+                Players.AddComponent<Unit>().SetData("P" + i, maxHP, maxHP, attackDmg, attackDmg *2, speed);
                 animator = Players.GetComponent<Animator>();
                 //objPlayer.transform.position = new Vector3(-3 + (i * 1.5f), 0, 0);
             }

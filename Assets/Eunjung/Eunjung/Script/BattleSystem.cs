@@ -1,6 +1,7 @@
 using Codice.Client.Common.ProcessTree;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Plastic.Newtonsoft.Json.Bson;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -24,11 +25,11 @@ namespace Eunjung
         /// <summary>
         /// 모든 유닛들
         /// </summary>
-        private List<Unit> units = new List<Unit>();
+        public List<Unit> units = new List<Unit>();
         /// <summary>
         /// 유닛들의 순번 저장
         /// </summary>
-        private Queue<Unit> turnQueue;
+        private List<Unit> turnQueue;
         /// <summary>
         /// 유닛의 행동 저장
         /// </summary>
@@ -109,13 +110,20 @@ namespace Eunjung
 
         void SetTurnQueue()
         {
-            turnQueue= new Queue<Unit>();
-            unitActions = new Dictionary<Unit, int>();
+            turnQueue= new List<Unit>(units);
+            SortTurnQueueBySpeed();
+            //unitActions = new Dictionary<Unit, int>();
 
-            foreach (Unit unit in units)
-            {
-                AddUnitToQueue(unit);
-            }
+            //foreach (Unit unit in units)
+            //{
+            //    AddUnitToQueue(unit);
+            //}
+        }
+        
+        void SortTurnQueueBySpeed()
+        {
+            //죽지 않는 유닛들을 찾고 빠른 속도 유닛으로 정렬
+            turnQueue = turnQueue.Where(unit => ! unit.isDead).OrderByDescending(unit => unit.speed).ToList();
         }
 
         public void EndTurn()
@@ -128,41 +136,44 @@ namespace Eunjung
         /// (속도가 많이 차이나는 유닛이 한턴에 여러번 공격 가능)
         /// </summary>
         /// <param name="unit"></param>
-        void AddUnitToQueue(Unit unit)
-        {
-            //내 속도가 최고 속도값으로 나눠서
-            int actions = Mathf.Max(1, unit.speed / GetFastestSpeed());
-            unitActions[unit] = actions;
-            for (int i = 0; i< actions; i++)
-            {
-                turnQueue.Enqueue(unit);
-            }
-            RemoveDeadUnitsFromQueue();
-        }
+        //void AddUnitToQueue(Unit unit)
+        //{
+        //    //내 속도가 최고 속도값으로 나눠서
+        //    int actions = Mathf.Max(1, unit.speed / GetFastestSpeed());
+        //    unitActions[unit] = actions;
+        //    for (int i = 0; i< actions; i++)
+        //    {
+        //        turnQueue.Enqueue(unit);
+        //    }
+        //    RemoveDeadUnitsFromQueue();
+        //}
 
         /// <summary>
         /// 가장 바른 속도를 가진 Unit의 속도를 받아온다.
         /// </summary>
         /// <returns></returns>
-        int GetFastestSpeed()
-        {
-            int maxSpeed = 1;
-            foreach (Unit unit in units)
-            {
-                if(unit.speed>maxSpeed)
-                    maxSpeed = unit.speed;
-            }
-            return maxSpeed;
-        }
+        //int GetFastestSpeed()
+        //{
+        //    int maxSpeed = 1;
+        //    foreach (Unit unit in units)
+        //    {
+        //        if(unit.speed>maxSpeed)
+        //            maxSpeed = unit.speed;
+        //    }
+        //    return maxSpeed;
+        //}
 
         void ProcessTurn()
         {
+            SortTurnQueueBySpeed();
             if(turnQueue.Count == 0)
             {
                 SetTurnQueue();
             }
-           SetTurnUI();
-            currentPlayerUnit = turnQueue.Dequeue();
+            SetTurnUI();
+            //currentPlayerUnit = turnQueue.Dequeue();
+            currentPlayerUnit = turnQueue[0];
+            turnQueue.RemoveAt(0);
 
             //플레이어들에서 람다식을 통해 현재 유닛이 있는지 확인한다.
             if(players.Exists(p => p.GetComponent<Unit>() == currentPlayerUnit))
@@ -223,8 +234,9 @@ namespace Eunjung
                 target.isDead = true;
                 target.GetComponent<CapsuleCollider>().enabled = false;
                 target.GetComponent<Animator>().SetTrigger("Death");
-                RemoveDeadUnitsFromQueue();
-                
+                turnQueue.RemoveAll(unit => unit.isDead);
+                //RemoveDeadUnitsFromQueue();
+
                 //Invoke("ProcessTurn", 1.0f);
             }
             uIControl.SetPlayerHPUI(target);
@@ -287,7 +299,8 @@ namespace Eunjung
                 uIControl.SetTextIng(selectedTarget.unitName + "가 사망!");
                 selectedTarget.GetComponent<CapsuleCollider>().enabled = false;
                 selectedTarget.GetComponent<Animator>().SetTrigger("Death");
-                RemoveDeadUnitsFromQueue();
+                turnQueue.RemoveAll(unit => unit.isDead);
+                //RemoveDeadUnitsFromQueue();
                 //Invoke("ProcessTurn", 1.0f);
             }
             uIControl.SetEnemyHPUI(selectedTarget);
@@ -304,19 +317,19 @@ namespace Eunjung
         /// <summary>
         /// 죽었는지 판단
         /// </summary>
-        void RemoveDeadUnitsFromQueue()
-        {
-            Queue<Unit> updatedQueue = new Queue<Unit>();
-            foreach (Unit unit in turnQueue)
-            {
-                if (!unit.isDead)
-                {
-                    updatedQueue.Enqueue(unit);
-                }
-            }
+        //void RemoveDeadUnitsFromQueue()
+        //{
+        //    Queue<Unit> updatedQueue = new Queue<Unit>();
+        //    foreach (Unit unit in turnQueue)
+        //    {
+        //        if (!unit.isDead)
+        //        {
+        //            updatedQueue.Enqueue(unit);
+        //        }
+        //    }
 
-            turnQueue = updatedQueue;
-        }
+        //    turnQueue = updatedQueue;
+        //}
         void Update()
         {
             if (isTargeting)
