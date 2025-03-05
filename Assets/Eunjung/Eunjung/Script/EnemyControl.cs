@@ -12,17 +12,16 @@ namespace Eunjung
         GameObject objEnemy;
         GameObject objEnemys;
         Animator animator;
-        Transform enemyResponse;
         NavMeshAgent navMeshAgent;
         GameObject Enemy;
-        Transform player;
         bool isStop;
-        public float navDistance = 5.0f;
-        GameManager gameManager;
+        Transform player;
+        //public float navDistance = 5.0f;
         bool isCheck = false;
+        GameManager gameManager;
         void Awake()
         {
-            objEnemy = Resources.Load<GameObject>("Prefabs/Enemy");
+            //objEnemy = Resources.Load<GameObject>("Prefabs/Enemy");
             objEnemys = Resources.Load<GameObject>("Prefabs/Enemys");
         }
         void Start()
@@ -43,7 +42,7 @@ namespace Eunjung
             //float distanceToPlayer = Vector3.Distance(Enemy.transform.position, player.position);
             //if (distanceToPlayer <= navDistance)
             //{
-                
+
             //    navMeshAgent.enabled = false;
             //    if (gameManager != null && isCheck == false)
             //    {

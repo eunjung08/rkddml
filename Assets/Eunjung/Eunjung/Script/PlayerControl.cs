@@ -19,11 +19,13 @@ namespace Eunjung
         Animator animator;
         bool isStop = false;
         BattleSystem battleSystem;
+        GameManager gameManager;
         // Start is called before the first frame update
         private void Awake()
         {
             //objPlayer = Resources.Load<GameObject>("Prefabs/Player");
             objPlayers = Resources.Load<GameObject>("Prefabs/Players");
+            gameManager = FindObjectOfType<GameManager>();
             //playerResponse = GameObject.Find("Spawn_p").transform;
             //CreatePlayer();
         }
@@ -43,6 +45,7 @@ namespace Eunjung
             //    Rotation();
             //}
         }
+
         //public void CreatePlayer()
         //{
         //  Player = Instantiate(objPlayer, playerResponse.position, playerResponse.transform.rotation);

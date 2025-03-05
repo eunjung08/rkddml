@@ -80,7 +80,7 @@ namespace Eunjung
                 {
                     if (map[x, z] == 1)
                     {
-                        Vector3 pos = new Vector3(x * scale, 0, z * scale);
+                        Vector3 pos = new Vector3(x * scale, 400, z * scale);
                         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         wall.transform.localScale = new Vector3(scale, scale, scale);
                         wall.transform.localPosition = pos;
@@ -88,7 +88,7 @@ namespace Eunjung
                     }
                     else if (map[x, z] == 0)
                     {
-                        Vector3 pos = new Vector3(x * scale, 0, z * scale);
+                        Vector3 pos = new Vector3(x * scale, 400, z * scale);
                         hall.Add(pos);
                     }
 
@@ -100,10 +100,10 @@ namespace Eunjung
                 {
                     if (map[x, z] == 1)
                     {
-                        Vector3 pos = new Vector3(x * scale, 0, z * scale);
+                        Vector3 pos = new Vector3(x * scale, 400, z * scale);
                         GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
                         plane.transform.localScale = new Vector3(scale, scale, scale);
-                        plane.transform.localPosition = new Vector3(pos.x, 1, pos.z);
+                        plane.transform.localPosition = new Vector3(pos.x, 400, pos.z);
                     }
                 }
             }
@@ -151,7 +151,7 @@ namespace Eunjung
         //    Enemy.transform.localPosition = hall[number];
         //    hall.RemoveAt(number);
         //    yield return new WaitForSeconds(0.1f);
-        //    if (hall.Count <= 0)
+        //    if (hall.Count/100 <= 0)
         //    {
         //        yield return null;
         //    }

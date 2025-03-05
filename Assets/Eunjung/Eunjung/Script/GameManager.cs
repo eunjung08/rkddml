@@ -2,6 +2,8 @@ using Codice.CM.Common;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 namespace Eunjung
 {
@@ -17,13 +19,24 @@ namespace Eunjung
 
         GameObject objPlayer;
         GameObject Player;
+        GameObject objEnemy;
+        GameObject Enemy;
         CharacterController characterController;
+        //NavMeshAgent navMeshAgent;
         bool isWalk = false;
         Animator animator;
+        Animator animator_e;
         public float moveSpeed = 10f;
+        //Transform player;
+        //public float navDistance = 5.0f;
+        bool isCheck = false;
+        Collider collider_e;
+        Rigidbody rigidbody_e;
+        Collider collider_p;
         private void Awake()
         {
             objPlayer = Resources.Load<GameObject>("Prefabs/Player");
+            objEnemy = Resources.Load<GameObject>("Prefabs/Enemy");
             GameObject objUIControl = new GameObject("UIControl");
             uIControl = objUIControl.AddComponent<UIControl>();
 
@@ -39,8 +52,7 @@ namespace Eunjung
         // Start is called before the first frame update
         void Start()
         {
-            characterController = Player.GetComponent<CharacterController>();
-            animator = Player.GetComponent<Animator>();
+
             //battleSystem.StartBattle();
         }
 
@@ -48,6 +60,12 @@ namespace Eunjung
         void Update()
         {
             PlayerMove();
+        }
+        public void Test()
+        {
+            collider_e = Enemy.GetComponent<Collider>();
+            collider_e.enabled = false;
+            BattleStart();
         }
 
         void PlayerMove()
@@ -82,6 +100,7 @@ namespace Eunjung
             {
                 animator.SetBool("isWalk", false);
             }
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             Plane plane = new Plane(Vector3.up, Vector3.zero);
@@ -106,12 +125,18 @@ namespace Eunjung
         public GameObject CrateMovePlayer()
         {
             Player = Instantiate(objPlayer);
+            characterController = Player.GetComponent<CharacterController>();
+            animator = Player.GetComponent<Animator>();
             return Player;
         }
 
-        //public GameObject CrateMoveEnemy()
-        //{
-
-        //}
+        public GameObject CrateMoveEnemy()
+        {
+            Enemy = Instantiate(objEnemy);
+            //navMeshAgent = Enemy.GetComponent<NavMeshAgent>();
+            animator_e = Enemy.GetComponent<Animator>();
+            //player = GameObject.Find("Player(Clone)").transform;
+            return Enemy;
+        }
     }
 }

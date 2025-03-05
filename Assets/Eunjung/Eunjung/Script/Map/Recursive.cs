@@ -25,10 +25,27 @@ namespace Eunjung
                 }
             }
             GameObject MovePlayer = GameObject.Find("GameManager").GetComponent<GameManager>().CrateMovePlayer();
-            MovePlayer.transform.position = new Vector3(x * scale, 1,y * scale);
+            MovePlayer.transform.position = new Vector3(x * scale, 400,y * scale);
             GameObject.Find("Main Camera").GetComponent<FollowCamera>().Set();
 
-            GameObject MoveEnemy = GameObject.Find("GameManager").GetComponent<GameManager>().CrateMoveEnemy();
+            //for (int i = 0; i < 10; i++)
+            //{
+                int xi = Random.Range(0, map.GetLength(0));
+                int yi = Random.Range(0, map.GetLength(1));
+                int cnti = 0;
+                while (map[xi, yi] == 1 || (xi == x && yi == y))
+                {
+                    xi = Random.Range(0, map.GetLength(0));
+                    yi = Random.Range(0, map.GetLength(1));
+                    cnti++;
+                    if (cnti > 100)
+                    {
+                        Debug.LogError("error");
+                    }
+                }
+                GameObject MoveEnemy = GameObject.Find("GameManager").GetComponent<GameManager>().CrateMoveEnemy();
+                MoveEnemy.transform.position = new Vector3(xi * scale, 400, yi * scale);
+            //}
         }
 
         void Generate(int x, int z)

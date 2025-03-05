@@ -61,7 +61,6 @@ namespace Eunjung
         private void Awake()
         {
             status = BattleStatus.MAP;
-            Debug.Log(status);
             uIControl = GameObject.Find("UIControl").GetComponent<UIControl>();
             playerControl = GameObject.Find("PlayerContorl").GetComponent<PlayerControl>();
             enemyControl = GameObject.Find("EnemyContorl").GetComponent<EnemyControl>();
